@@ -1,9 +1,11 @@
-
+# %% [markdown]
 # # Modèles PyTorch - Classification et Régression
+# 
+# Ce notebook implémente deux modèles simples avec PyTorch:
 # 1. **Classification**: Prédire si un étudiant va compléter le cours (Completed: 0 ou 1)
 # 2. **Régression**: Prédire Quiz_Score_Avg, Project_Grade, Satisfaction_Rating, Time_Spent_Hours
 
-
+# %%
 import pandas as pd
 import numpy as np
 import torch
@@ -17,8 +19,10 @@ import matplotlib.pyplot as plt
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 print(f"Device utilisé: {device}")
 
+# %% [markdown]
 # ## 1. Chargement des données
 
+# %%
 # Classification
 X_class = pd.read_csv('../data/processed/X_classification.csv')
 y_class = pd.read_csv('../data/processed/y_classification.csv')
@@ -35,9 +39,14 @@ print("\nREGRESSION:")
 print(f"X_reg: {X_reg.shape}")
 print(f"y_reg: {y_reg.shape}")
 
+# %% [markdown]
+# ---
 # # PARTIE 1: MODELE DE CLASSIFICATION
-# Objectif: Prédire si un étudiant va compléter le cours (0 ou 1)
+# ---
+# 
+# **Objectif**: Prédire si un étudiant va compléter le cours (0 ou 1)
 
+# %%
 # Préparation des données - Classification
 X_class_np = X_class.values
 y_class_np = y_class.values.ravel()
@@ -57,6 +66,7 @@ y_test_class_tensor = torch.FloatTensor(y_test_class).to(device)
 
 print(f"Données Classification: Train={X_train_class_tensor.shape[0]}, Val={X_val_class_tensor.shape[0]}, Test={X_test_class_tensor.shape[0]}")
 
+# %%
 # Modèle de Classification
 class CourseCompletionClassifier(nn.Module):
     def __init__(self, input_dim):
@@ -91,6 +101,7 @@ class CourseCompletionClassifier(nn.Module):
 
 model_class = CourseCompletionClassifier(X_train_class_tensor.shape[1]).to(device)
 
+# %%
 # Entraînement Classification avec Early Stopping
 criterion = nn.BCELoss()
 optimizer = torch.optim.Adam(model_class.parameters(), lr=0.01)
@@ -133,6 +144,7 @@ for epoch in range(500):
 # Sauvegarde du meilleur modèle
 torch.save(model_class.state_dict(), '../models/torch_clf_model.pth')
 
+# %%
 # EVALUATION - CLASSIFICATION
 from sklearn.metrics import confusion_matrix, classification_report
 import seaborn as sns
@@ -162,6 +174,7 @@ plt.show()
 print("\nClassification Report:")
 print(classification_report(y_test_np, y_pred_np))
 
+# %%
 plt.figure(figsize=(10, 5))
 plt.plot(train_history, label='Train Loss')
 plt.plot(val_history, label='Val Loss')
@@ -172,13 +185,18 @@ plt.legend()
 plt.grid(True)
 plt.show()
 
-# PARTIE 2: MODELE DE REGRESSION
-# Objectif: Prédire 4 variables continues:
+# %% [markdown]
+# ---
+# # PARTIE 2: MODELE DE REGRESSION
+# ---
+# 
+# **Objectif**: Prédire 4 variables continues:
 # - Quiz_Score_Avg
 # - Project_Grade  
 # - Satisfaction_Rating
 # - Time_Spent_Hours
 
+# %%
 # Préparation des données - Régression
 X_reg_np = X_reg.values
 y_reg_np = y_reg.values
@@ -188,6 +206,12 @@ X_train_reg, X_test_reg, y_train_reg, y_test_reg = train_test_split(X_reg_np, y_
 
 # 2. test (15%) / val (15%) 
 X_test_reg, X_val_reg, y_test_reg, y_val_reg = train_test_split(X_train_reg, y_train_reg, test_size=0.5, random_state=42)
+
+#scalarisation de y
+scaler_y = StandardScaler()
+y_train_reg = scaler_y.fit_transform(y_train_reg)
+y_val_reg = scaler_y.transform(y_val_reg)
+y_test_reg = scaler_y.transform(y_test_reg)
 
 # To Tensor
 X_train_reg = torch.FloatTensor(X_train_reg).to(device)
@@ -199,6 +223,7 @@ y_test_reg = torch.FloatTensor(y_test_reg).to(device)
 
 print(f"Données Classification: Train={X_train_reg.shape[0]}, Val={X_val_reg.shape[0]}, Test={X_test_reg.shape[0]}")
 
+# %%
 # Modèle de Régression Amélioré
 class StudentPerformanceRegressor(nn.Module):
     def __init__(self, input_dim, output_dim):
@@ -229,16 +254,17 @@ class StudentPerformanceRegressor(nn.Module):
 
 model_reg = StudentPerformanceRegressor(X_train_reg.shape[1], y_train_reg.shape[1]).to(device)
 
+# %%
 # Entraînement Régression avec Early Stopping
 criterion_reg = nn.HuberLoss(delta=1.0)
-optimizer_reg = torch.optim.Adam(model_reg.parameters(), lr=0.01)
+optimizer_reg = torch.optim.Adam(model_reg.parameters(), lr=0.02)
 
 best_reg_loss = float('inf')
 patience_reg = 40
 counter_reg = 0
 r_train_hist, r_val_hist = [], []
 
-for epoch in range(400):
+for epoch in range(500):
     model_reg.train()
     optimizer_reg.zero_grad()
     pred = model_reg(X_train_reg)
@@ -264,16 +290,17 @@ for epoch in range(400):
             break
             
     if (epoch+1) % 20 == 0:
-        print(f"Epoch {epoch+1:03d} | Train MSE: {loss.item():.4f} | Val MSE: {val_loss.item():.4f}")
+        print(f"Epoch {epoch+1:03d} | Train HuberLoss: {loss.item():.4f} | Val HuberLoss: {val_loss.item():.4f}")
 
 # Sauvegarde du meilleur modèle
 torch.save(model_class.state_dict(), '../models/torch_reg_model.pth')
 
+# %%
 # Évaluation Régression
 model_reg.eval()
 with torch.no_grad():
-    y_pred_scaled = model_reg(X_test_reg_t).cpu().numpy()
-    y_test_scaled = y_test_reg_t.cpu().numpy()
+    y_pred_scaled = model_reg(X_test_reg).cpu().numpy()
+    y_test_scaled = y_test_reg.cpu().numpy()
 
 # Inverse transform
 y_pred_final = scaler_y.inverse_transform(y_pred_scaled)
@@ -286,16 +313,18 @@ for i, col in enumerate(target_names):
     print(f"{col:15} | RMSE: {rmse:.3f} | R2: {r2:.3f}")
 
 
+# %%
 plt.figure(figsize=(10, 5))
-plt.plot(r_train_hist, label='Train MSE')
-plt.plot(r_val_hist, label='Val MSE')
+plt.plot(r_train_hist, label='Train HuberLoss')
+plt.plot(r_val_hist, label='Val HuberLoss')
 plt.title('Training & Validation Loss (Regression)')
 plt.xlabel('Epochs')
-plt.ylabel('MSE Loss')
+plt.ylabel('HuberLoss Loss')
 plt.legend()
 plt.grid(True)
 plt.show()
 
+# %%
 # VISUALISATION - PREDICTIONS vs VALEURS REELLES
 
 fig, axes = plt.subplots(2, 2, figsize=(12, 10))
