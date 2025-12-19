@@ -7,5 +7,4 @@ torch
 matplotlib
 seaborn
 shap
-mlflow
 jupyter
