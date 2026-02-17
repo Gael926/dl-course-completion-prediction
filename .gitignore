@@ -48,8 +48,5 @@ Thumbs.db
 # Project Specific
 data/
 model/
-reports/
 logs/
-*.pkl
-*.png
 *.pdf
