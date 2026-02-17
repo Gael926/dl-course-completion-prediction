@@ -1,19 +1,18 @@
 # %% [markdown]
 # # Exploratory Data Analysis (EDA)
-# 
+#
 # ## Dataset: Student Course Completion Prediction
 # This notebook performs a comprehensive EDA to understand the data, identify patterns, and prepare for modeling.
 
 # %%
 import pandas as pd
-import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
-from sklearn.preprocessing import OneHotEncoder, LabelEncoder, OrdinalEncoder, StandardScaler
+from sklearn.preprocessing import LabelEncoder, OrdinalEncoder, StandardScaler
 
 # Configuration
 sns.set_style("whitegrid")
-pd.set_option('display.max_columns', None)
+pd.set_option("display.max_columns", None)
 
 # %% [markdown]
 # ## 1. Data Loading and Overview
@@ -22,13 +21,13 @@ pd.set_option('display.max_columns', None)
 file_path = "../data/raw/Course_Completion_Prediction.csv"
 df = pd.read_csv(file_path)
 # on garde que les categorie = a programming
-df = df[df['Category'] == 'Programming']
+df = df[df["Category"] == "Programming"]
 print(f"Dataset Shape: {df.shape}")
 df.head()
 
 # %% [markdown]
 # ### Feature Descriptions
-# 
+#
 # | Feature | Description |
 # | :--- | :--- |
 # | Student_ID | Unique identifier for the student. |
@@ -107,7 +106,7 @@ print(f"\nDuplicate Rows: {duplicates}")
 numerical_cols = []
 categorical_cols = []
 for col in df.columns:
-    if df[col].dtype == 'object':
+    if df[col].dtype == "object":
         categorical_cols.append(col)
     else:
         numerical_cols.append(col)
@@ -119,9 +118,20 @@ print(categorical_cols)
 
 # %%
 # Définition des listes de colonnes à encoder
-cardinal_label_encode = ['City', "Course_Name"]
-categorical_label_encode  = ['Education_Level', 'Course_Level', 'Internet_Connection_Quality']
-categorical_one_hot_encode = ['Gender', 'Device_Type','Employment_Status','Payment_Mode', 'Fee_Paid', 'Discount_Used']
+cardinal_label_encode = ["City", "Course_Name"]
+categorical_label_encode = [
+    "Education_Level",
+    "Course_Level",
+    "Internet_Connection_Quality",
+]
+categorical_one_hot_encode = [
+    "Gender",
+    "Device_Type",
+    "Employment_Status",
+    "Payment_Mode",
+    "Fee_Paid",
+    "Discount_Used",
+]
 
 # %%
 # Label Encoding pour les colonnes à haute cardinalité (City, Course_Name)
@@ -137,12 +147,16 @@ print(f"Course_Name: {df['Course_Name'].nunique()} valeurs uniques")
 # Ordinal Encoding pour les colonnes catégorielles ordonnées
 
 # Définition des ordres pour chaque colonne
-education_order = ['HighSchool','Diploma', 'Bachelor', 'Master','PhD']
-course_level_order = ['Beginner', 'Intermediate', 'Advanced']
-internet_order = ['Low', 'Medium', 'High']
+education_order = ["HighSchool", "Diploma", "Bachelor", "Master", "PhD"]
+course_level_order = ["Beginner", "Intermediate", "Advanced"]
+internet_order = ["Low", "Medium", "High"]
 
-ordinal_encoder = OrdinalEncoder(categories=[education_order, course_level_order, internet_order])
-df[categorical_label_encode] = ordinal_encoder.fit_transform(df[categorical_label_encode])
+ordinal_encoder = OrdinalEncoder(
+    categories=[education_order, course_level_order, internet_order]
+)
+df[categorical_label_encode] = ordinal_encoder.fit_transform(
+    df[categorical_label_encode]
+)
 
 # %%
 # One-Hot Encoding pour les colonnes catégorielles nominales
@@ -150,17 +164,17 @@ df[categorical_label_encode] = ordinal_encoder.fit_transform(df[categorical_labe
 df = pd.get_dummies(df, columns=categorical_one_hot_encode, drop_first=True)
 
 print(f"\nNouvelle forme du dataset: {df.shape}")
-print(f"\nNouvelles colonnes créées:")
+print("\nNouvelles colonnes créées:")
 print([col for col in df.columns if any(x in col for x in categorical_one_hot_encode)])
 
 # %%
 # Encodage de la variable cible pour la classification
 # Completed: 'Completed' -> 1, 'Not Completed' -> 0
 
-df['Completed'] = df['Completed'].map({'Completed': 1, 'Not Completed': 0})
+df["Completed"] = df["Completed"].map({"Completed": 1, "Not Completed": 0})
 
 print("Encodage de la variable cible 'Completed':")
-print(df['Completed'].value_counts())
+print(df["Completed"].value_counts())
 
 # %%
 # Vérification du dataset encodé
@@ -173,21 +187,32 @@ df.head()
 # ### Split des deux datasets (Classification et Regression) + Normalisation des données numériques
 
 # %%
-from sklearn.preprocessing import StandardScaler
-
 # Définition des colonnes administrative à supprimer systématiquement
-excluded_cols = ['Course_ID', 'Student_ID', 'Category', 'Name', 'Enrollment_Date']
+excluded_cols = ["Course_ID", "Student_ID", "Category", "Name", "Enrollment_Date"]
 
 # DATASET POUR LA REGRESSION
-target_cols_reg = ["Quiz_Score_Avg", "Project_Grade", "Satisfaction_Rating", "Time_Spent_Hours"]
-df_reg = df.drop(columns=[col for col in excluded_cols + ['Completed', 'Quiz_Attempts'] if col in df.columns])
+target_cols_reg = [
+    "Quiz_Score_Avg",
+    "Project_Grade",
+    "Satisfaction_Rating",
+    "Time_Spent_Hours",
+]
+df_reg = df.drop(
+    columns=[
+        col
+        for col in excluded_cols + ["Completed", "Quiz_Attempts"]
+        if col in df.columns
+    ]
+)
 
 X_reg = df_reg.drop(columns=[col for col in target_cols_reg if col in df_reg.columns])
 y_reg = df_reg[[col for col in target_cols_reg if col in df_reg.columns]]
 
 # Scaling de X_reg
 scaler_reg = StandardScaler()
-num_cols_reg = X_reg.select_dtypes(include=['number', 'bool', 'int64', 'float64']).columns
+num_cols_reg = X_reg.select_dtypes(
+    include=["number", "bool", "int64", "float64"]
+).columns
 X_reg[num_cols_reg] = scaler_reg.fit_transform(X_reg[num_cols_reg])
 
 print(f"Regression: X_reg scaled ({X_reg.shape}), y_reg intact ({y_reg.shape})")
@@ -202,15 +227,62 @@ y_class = df_class[target_col_class]
 
 # Scaling de X_class
 scaler_class = StandardScaler()
-num_cols_class = X_class.select_dtypes(include=['number', 'bool', 'int64', 'float64']).columns
+num_cols_class = X_class.select_dtypes(
+    include=["number", "bool", "int64", "float64"]
+).columns
 X_class[num_cols_class] = scaler_class.fit_transform(X_class[num_cols_class])
 
-print(f"Classification: X_class scaled ({X_class.shape}), y_class intact ({y_class.shape})")
+print(
+    f"Classification: X_class scaled ({X_class.shape}), y_class intact ({y_class.shape})"
+)
 
+
+# %%
+# On concatène X et y pour calculer la corrélation globale
+df_class_corr = pd.concat([X_class, y_class], axis=1)
+
+# Calcul de la corrélation avec la cible uniquement
+corr_with_target = df_class_corr.corr()["Completed"].sort_values(ascending=False)
+
+# Affichage visuel
+plt.figure(figsize=(10, 12))
+sns.heatmap(corr_with_target.to_frame(), annot=True, cmap="coolwarm", fmt=".2f")
+plt.title("Corrélation des Features avec la cible 'Completed'")
+plt.tight_layout()
+plt.savefig("../reports/figures/correlation_target.png", dpi=300)
+plt.show()
+
+# Affichage texte des 10 plus importantes
+print("Top 10 des variables les plus corrélées à 'Completed' :")
+print(corr_with_target.head(10))
+
+# %%
+# Liste de vos 4 targets
+targets_reg = [
+    "Quiz_Score_Avg",
+    "Project_Grade",
+    "Satisfaction_Rating",
+    "Time_Spent_Hours",
+]
+
+# On concatène X et y
+df_reg_corr = pd.concat([X_reg, y_reg], axis=1)
+
+# Calcul de la matrice de corrélation
+# On filtre pour ne garder que la corrélation entre les Features (X) et les Targets (y)
+corr_matrix_reg = df_reg_corr.corr().loc[X_reg.columns, targets_reg]
+
+# Affichage visuel (Heatmap)
+plt.figure(figsize=(12, 10))
+sns.heatmap(corr_matrix_reg, annot=True, cmap="YlGnBu", fmt=".2f")
+plt.title("Corrélation entre les Features et les 4 Targets de Régression")
+plt.tight_layout()
+plt.savefig("../reports/figures/correlation_matrix_reg.png", dpi=300)
+plt.show()
 
 # %% [markdown]
 # ---
-# 
+#
 # ### Export des données
 
 # %%
@@ -230,9 +302,7 @@ X_class.to_csv(f"{processed_path}/X_classification.csv", index=False)
 y_class.to_csv(f"{processed_path}/y_classification.csv", index=False)
 
 print("Datasets sauvegardés dans data/processed/")
-print(f"  - X_regression.csv ({X_reg.shape})")
-print(f"  - y_regression.csv ({y_reg.shape})")
-print(f"  - X_classification.csv ({X_class.shape})")
-print(f"  - y_classification.csv ({y_class.shape})")
-
-
+print(f"- X_regression.csv ({X_reg.shape})")
+print(f"- y_regression.csv ({y_reg.shape})")
+print(f"- X_classification.csv ({X_class.shape})")
+print(f"- y_classification.csv ({y_class.shape})")
