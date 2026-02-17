@@ -49,7 +49,7 @@ Nous avons utilisé des réseaux de neurones (PyTorch/TensorFlow) pour prédire 
 
 | Target | RMSE (PyTorch) | R² | Interprétation |
 | :--- | :---: | :---: | :--- |
-| **Project Grade** | **3.56** | **0.94** | 🌟 **Excellente prédiction**. Les features (quiz, activité) expliquent très bien la note finale. |
+| **Project Grade** | **3.56** | **0.94** | **Excellente prédiction**. Les features (quiz, activité) expliquent très bien la note finale. |
 | **Quiz Score** | 12.31 | 0.04 | Difficile à prédire précisément uniquement via le comportement. |
 | **Satisfaction** | 0.70 | ~0.00 | Aucune corrélation trouvée (probablement subjectif/aléatoire). |
 | **Time Spent** | 3.82 | ~0.00 | Aucune corrélation trouvée avec les features disponibles. |
@@ -61,7 +61,7 @@ Nous avons utilisé des réseaux de neurones (PyTorch/TensorFlow) pour prédire 
 
 ---
 
-## 🚀 Key Insights
+## Analyses Clés
 *   **Engagement**: Les étudiants ayant complété le projet final ont 90% plus de chances de réussir le cours.
 *   **Comportement**: Le temps passé sur le cours est moins prédictif que la performance aux tests intermédiaires.
 *   **Robustesse**: Le Gradient Boosting reste le modèle de référence pour les données structurées de ce type.
@@ -97,19 +97,28 @@ Nous avons utilisé des réseaux de neurones (PyTorch/TensorFlow) pour prédire 
 
 ## Structure du Projet
 ```
-├── data/               # Données brutes et procesées
+├── data/               # Données brutes et traitées
 ├── models/             # Modèles sauvegardés (.pth, .pkl)
-├── notebooks/          # Notebooks Jupyter pour l'analyse (EDA, SHAP)
-├── src/                # Scripts Python modulaires
+├── notebooks/          # Notebooks Jupyter (Exploration & Analyse)
+│   ├── 00_data_prep.ipynb
+│   ├── 01_baselines.ipynb
+│   ├── 02_sklearn_models.ipynb
+│   ├── 03_tf_models.ipynb
+│   ├── 04_torch_models.ipynb
+│   └── 05_model_analysis.ipynb
+├── reports/            # Rapports et visualisations
+│   └── figures/        # Graphiques générés pour le README
+├── src/                # Scripts Python modulaires (Production)
 │   ├── 00_data_prep.py        # Nettoyage & Feature Engineering
-│   ├── 01_baselines.py        # Modèles simples
-│   ├── 02_sklearn_models.py   # Random Forest, GBM
-│   ├── 03_tf_models.py        # TensorFlow Implementation
-│   └── 04_torch_models.py     # PyTorch Implementation (Production)
-├── requirements.txt    # Dépendances
-└── README.md           # Documentation du projet (ce fichier)
+│   ├── 01_baselines.py        # Modèles de base
+│   ├── 02_sklearn_models.py   # Modèles Scikit-Learn
+│   ├── 03_tf_models.py        # Implémentation TensorFlow
+│   ├── 04_torch_models.py     # Implémentation PyTorch
+│   ├── 05_model_analysis.py   # Analyse des résultats & SHAP
+├── requirements.txt    # Dépendances du projet
+└── README.md           # Documentation
 ```
 
-## Insights Business
+## Impact Métier & Stratégie
 - **Intervention Précoce** : Comme le `Project_Grade` est très prévisible, nous pouvons identifier tôt les étudiants à risque d'échec et leur proposer du tutorat.
 - **Engagement** : Le temps passé (`Time_Spent`) n'est pas corrélé à la réussite dans ce dataset, suggérant que la *qualité* de l'étude prime sur la *quantité*.
