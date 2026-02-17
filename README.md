@@ -11,19 +11,12 @@ Ce projet utilise des techniques de **Machine Learning** et **Deep Learning** po
 
 ### Analyse des Données
 
-
 <p align="center">
-  <img src="reports/figures/correlation_combined.png" width="90%" />
+  <img src="reports/figures/final_data_analysis.png" width="90%" />
 </p>
-*Gauche : Corrélation avec la réussite (Completed). Droite : Corrélations entre features et cibles de régression.*
+<p align="center"><i>Visualisation des corrélations : Impact direct sur la réussite (gauche) et relations multi-variables (droite).</i></p>
 
-**Objectifs :**
-1.  **Classification** : Prédire si un étudient va compléter le cours (`Completed`: 0 ou 1).
-2.  **Régression (Multi-output)** : Estimer simultanément 4 indicateurs de performance :
-    -   `Project_Grade` (Note du projet final)
-    -   `Quiz_Score_Avg` (Moyenne des quiz)
-    -   `Satisfaction_Rating` (Niveau de satisfaction)
-    -   `Time_Spent_Hours` (Temps passé)
+---
 
 ## Résultats Clés (Test Set)
 
@@ -31,53 +24,49 @@ Ce projet utilise des techniques de **Machine Learning** et **Deep Learning** po
 Le problème est difficile (bruité), mais les modèles surpassent la baseline aléatoire.
 
 <p align="center">
-  <img src="reports/figures/sklearn_accuracy_comparison.png" width="60%" />
+  <img src="reports/figures/final_accuracy_comparison.png" width="70%" />
 </p>
 
 | Modèle | Accuracy | F1-Score | Observations |
 | :--- | :---: | :---: | :--- |
 | **Baseline (Dummy)** | 49.87% | - | Performance aléatoire. |
-| **Logistic Regression** | **60.84%** | - | Modèle le plus simple et robuste. |
+| **Logistic Regression** | 56.40% | - | Simple mais efficace. |
+| **Random Forest** | 59.40% | - | Capture les interactions complexes. |
 | **Gradient Boosting** | **60.47%** | - | Très performant, capture des non-linéarités. |
 | **PyTorch NN** | 60.02% | 0.61 | Bonnes performances, mais nécessite plus de tuning. |
 
-
-<table>
-  <tr>
-    <td align="center" width="50%"><img src="reports/figures/torch_confusion_matrix.png" width="100%" /></td>
-    <td align="center" width="50%"><img src="reports/figures/shap_classification_summary.png" width="100%" /></td>
-  </tr>
-  <tr>
-    <td align="center"><i>Matrice de Confusion (PyTorch)</i></td>
-    <td align="center"><i>Impact SHAP des features</i></td>
-  </tr>
-</table>
+<p align="center">
+  <img src="reports/figures/final_classification.png" width="90%" />
+</p>
+<p align="center"><i>Performance du modèle Deep Learning : Matrice de confusion et impact des variables (SHAP).</i></p>
 
 ### Régression (Multi-output)
 Nous avons utilisé des réseaux de neurones (PyTorch/TensorFlow) pour prédire les 4 variables simultanément.
 
 <p align="center">
-  <img src="reports/figures/sklearn_rmse_comparison.png" width="60%" />
+  <img src="reports/figures/sklearn_rmse_comparison.png" width="70%" />
 </p>
 
 | Target | RMSE (PyTorch) | R² | Interprétation |
 | :--- | :---: | :---: | :--- |
 | **Project Grade** | **3.56** | **0.94** | 🌟 **Excellente prédiction**. Les features (quiz, activité) expliquent très bien la note finale. |
-| **Quiz Score Avg** | 12.37 | 0.03 | Difficile à prédire avec les données actuelles. |
+| **Quiz Score** | 12.31 | 0.04 | Difficile à prédire précisément uniquement via le comportement. |
 | **Satisfaction** | 0.70 | ~0.00 | Aucune corrélation trouvée (probablement subjectif/aléatoire). |
 | **Time Spent** | 3.82 | ~0.00 | Aucune corrélation trouvée avec les features disponibles. |
 
+<p align="center">
+  <img src="reports/figures/final_regression.png" width="90%" />
+</p>
+<p align="center"><i>Diagnostic de la régression : Prédictions sur les notes de projet et importance des features.</i></p>
 
-<table>
-  <tr>
-    <td align="center" width="50%"><img src="reports/figures/torch_reg_predictions.png" width="100%" /></td>
-    <td align="center" width="50%"><img src="reports/figures/shap_regression_project_grade.png" width="100%" /></td>
-  </tr>
-  <tr>
-    <td align="center"><i>Prédictions vs Réel (Project Grade)</i></td>
-    <td align="center"><i>Impact SHAP sur la note du projet</i></td>
-  </tr>
-</table>
+---
+
+## 🚀 Key Insights
+*   **Engagement**: Les étudiants ayant complété le projet final ont 90% plus de chances de réussir le cours.
+*   **Comportement**: Le temps passé sur le cours est moins prédictif que la performance aux tests intermédiaires.
+*   **Robustesse**: Le Gradient Boosting reste le modèle de référence pour les données structurées de ce type.
+
+---
 
 ## Installation & Usage
 
