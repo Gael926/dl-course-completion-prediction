@@ -244,17 +244,6 @@ df_class_corr = pd.concat([X_class, y_class], axis=1)
 # Calcul de la corrélation avec la cible uniquement
 corr_with_target = df_class_corr.corr()["Completed"].sort_values(ascending=False)
 
-# Affichage visuel
-plt.figure(figsize=(10, 12))
-sns.heatmap(corr_with_target.to_frame(), annot=True, cmap="coolwarm", fmt=".2f")
-plt.title("Corrélation des Features avec la cible 'Completed'")
-plt.tight_layout()
-plt.savefig("../reports/figures/correlation_target.png", dpi=300)
-plt.show()
-
-# Affichage texte des 10 plus importantes
-print("Top 10 des variables les plus corrélées à 'Completed' :")
-print(corr_with_target.head(10))
 
 # %%
 # Liste de vos 4 targets
@@ -272,12 +261,29 @@ df_reg_corr = pd.concat([X_reg, y_reg], axis=1)
 # On filtre pour ne garder que la corrélation entre les Features (X) et les Targets (y)
 corr_matrix_reg = df_reg_corr.corr().loc[X_reg.columns, targets_reg]
 
-# Affichage visuel (Heatmap)
-plt.figure(figsize=(12, 10))
-sns.heatmap(corr_matrix_reg, annot=True, cmap="YlGnBu", fmt=".2f")
-plt.title("Corrélation entre les Features et les 4 Targets de Régression")
+# Combined Plot
+fig = plt.figure(figsize=(16, 10))
+gs = fig.add_gridspec(1, 2, width_ratios=[1, 4], wspace=0.3)
+
+# Plot 1: Classification Target Correlation
+ax0 = fig.add_subplot(gs[0])
+sns.heatmap(
+    corr_with_target.to_frame(),
+    annot=True,
+    cmap="coolwarm",
+    fmt=".2f",
+    ax=ax0,
+    cbar=False,
+)
+ax0.set_title("Classification: 'Completed'", fontsize=10)
+
+# Plot 2: Regression Target Correlations
+ax1 = fig.add_subplot(gs[1])
+sns.heatmap(corr_matrix_reg, annot=True, cmap="YlGnBu", fmt=".2f", ax=ax1)
+ax1.set_title("Régression: 4 Targets", fontsize=10)
+
 plt.tight_layout()
-plt.savefig("../reports/figures/correlation_matrix_reg.png", dpi=300)
+plt.savefig("../reports/figures/correlation_combined.png", dpi=300)
 plt.show()
 
 # %% [markdown]

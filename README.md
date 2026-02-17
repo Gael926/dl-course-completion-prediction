@@ -10,10 +10,10 @@
 Ce projet utilise des techniques de **Machine Learning** et **Deep Learning** pour analyser et prédire la réussite des étudiants dans un cours en ligne.
 
 ### Analyse des Données
-Avant de modéliser, nous avons analysé les corrélations :
+
+
 <p align="center">
-  <img src="reports/figures/correlation_target.png" width="45%" />
-  <img src="reports/figures/correlation_matrix_reg.png" width="45%" />
+  <img src="reports/figures/correlation_combined.png" width="90%" />
 </p>
 *Gauche : Corrélation avec la réussite (Completed). Droite : Corrélations entre features et cibles de régression.*
 
@@ -41,12 +41,17 @@ Le problème est difficile (bruité), mais les modèles surpassent la baseline a
 | **Gradient Boosting** | **60.47%** | - | Très performant, capture des non-linéarités. |
 | **PyTorch NN** | 60.02% | 0.61 | Bonnes performances, mais nécessite plus de tuning. |
 
-#### Visualisations (Classification)
-<p float="left">
-  <img src="reports/figures/torch_confusion_matrix.png" width="45%" />
-  <img src="reports/figures/shap_classification_summary.png" width="45%" /> 
-</p>
-*Gauche : Matrice de Confusion (PyTorch). Droite : Impact SHAP des features.*
+
+<table>
+  <tr>
+    <td align="center" width="50%"><img src="reports/figures/torch_confusion_matrix.png" width="100%" /></td>
+    <td align="center" width="50%"><img src="reports/figures/shap_classification_summary.png" width="100%" /></td>
+  </tr>
+  <tr>
+    <td align="center"><i>Matrice de Confusion (PyTorch)</i></td>
+    <td align="center"><i>Impact SHAP des features</i></td>
+  </tr>
+</table>
 
 ### Régression (Multi-output)
 Nous avons utilisé des réseaux de neurones (PyTorch/TensorFlow) pour prédire les 4 variables simultanément.
@@ -62,12 +67,17 @@ Nous avons utilisé des réseaux de neurones (PyTorch/TensorFlow) pour prédire 
 | **Satisfaction** | 0.70 | ~0.00 | Aucune corrélation trouvée (probablement subjectif/aléatoire). |
 | **Time Spent** | 3.82 | ~0.00 | Aucune corrélation trouvée avec les features disponibles. |
 
-#### Visualisations (Régression - Project Grade)
-<p float="left">
-  <img src="reports/figures/torch_reg_predictions.png" width="45%" />
-  <img src="reports/figures/shap_regression_project_grade.png" width="45%" />
-</p>
-*Gauche : Prédictions vs Réel (Project Grade). Droite : Impact SHAP sur la note du projet.*
+
+<table>
+  <tr>
+    <td align="center" width="50%"><img src="reports/figures/torch_reg_predictions.png" width="100%" /></td>
+    <td align="center" width="50%"><img src="reports/figures/shap_regression_project_grade.png" width="100%" /></td>
+  </tr>
+  <tr>
+    <td align="center"><i>Prédictions vs Réel (Project Grade)</i></td>
+    <td align="center"><i>Impact SHAP sur la note du projet</i></td>
+  </tr>
+</table>
 
 ## Installation & Usage
 
