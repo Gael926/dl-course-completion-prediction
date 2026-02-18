@@ -9,6 +9,17 @@
 ## Aperçu du Projet
 Ce projet utilise des techniques de **Machine Learning** et **Deep Learning** pour analyser et prédire la réussite des étudiants dans un cours en ligne.
 
+<p align="center">
+  <a href="https://votre-app-streamlit.streamlit.app/">
+    <img src="https://img.shields.io/badge/Live_Demo-Accéder_au_Dashboard-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white" alt="Live Demo" />
+  </a>
+</p>
+
+<p align="center">
+  <img src="reports/dashboard_demo.gif" width="90%" />
+</p>
+<p align="center"><i>Démo : Interface interactive de prédiction (Streamlit).</i></p>
+
 ### Analyse des Données
 
 <p align="center">
@@ -95,6 +106,23 @@ Nous avons utilisé des réseaux de neurones (PyTorch/TensorFlow) pour prédire 
     pytest
     ```
 
+### 🚀 Interface & Déploiement
+
+Le projet est optimisé pour un déploiement rapide et gratuit :
+
+1.  **Dashboard Streamlit (Stand-alone)** :
+    L'interface gère désormais l'inférence localement, ce qui permet de l'héberger sans serveur externe.
+    ```bash
+    python -m streamlit run streamlit_app.py
+    ```
+
+2.  **API d'Inférence (FastAPI)** :
+    Toujours disponible pour une utilisation programmatique ou pour montrer vos compétences en backend.
+    ```bash
+    uvicorn app:app --reload
+    ```
+    Accès Swagger UI : `http://127.0.0.1:8000/docs`
+
 ### Intégration Continue (CI/CD)
 Le projet utilise **GitHub Actions** pour garantir la qualité du code. À chaque modification (push), un pipeline automatique :
 1. Installe l'environnement.
@@ -137,6 +165,8 @@ docker run ml-course-prediction
 │   └── test_models.py         # Validation de l'intégrité des modèles
 ├── .github/workflows/         # Configuration GitHub Actions (CI/CD)
 ├── main.py                    # Script d'orchestration (Point d'entrée)
+├── app.py                     # Serveur d'inférence FastAPI
+├── streamlit_app.py           # Dashboard de visualisation
 ├── requirements.txt           # Dépendances du projet
 ├── Dockerfile                 # Configuration Docker
 ├── .dockerignore              # Fichiers à ignorer par Docker

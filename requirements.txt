@@ -9,3 +9,8 @@ seaborn
 shap
 jupyter
 pytest
+joblib
+fastapi
+uvicorn
+streamlit
+requests

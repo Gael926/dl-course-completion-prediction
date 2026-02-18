@@ -6,15 +6,16 @@
 
 # %%
 import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sns
+
+# import matplotlib.pyplot as plt
+# import seaborn as sns
 from sklearn.preprocessing import LabelEncoder, OrdinalEncoder, StandardScaler
+import os
+import joblib
 
 # Configuration
-sns.set_style("whitegrid")
+# sns.set_style("whitegrid")
 pd.set_option("display.max_columns", None)
-
-import os
 
 # Base directory for relative paths (project root)
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -141,9 +142,13 @@ categorical_one_hot_encode = [
 # %%
 # Label Encoding pour les colonnes à haute cardinalité (City, Course_Name)
 # On utilise LabelEncoder car ces colonnes ont beaucoup de valeurs uniques
-label_encoder = LabelEncoder()
+label_encoders = {}
 for col in cardinal_label_encode:
-    df[col] = label_encoder.fit_transform(df[col])
+    le = LabelEncoder()
+    df[col] = le.fit_transform(df[col])
+    label_encoders[col] = le
+
+joblib.dump(label_encoders, os.path.join(ROOT_DIR, "models", "label_encoders.pkl"))
 
 print(f"City: {df['City'].nunique()} valeurs uniques")
 print(f"Course_Name: {df['Course_Name'].nunique()} valeurs uniques")
@@ -162,6 +167,7 @@ ordinal_encoder = OrdinalEncoder(
 df[categorical_label_encode] = ordinal_encoder.fit_transform(
     df[categorical_label_encode]
 )
+joblib.dump(ordinal_encoder, os.path.join(ROOT_DIR, "models", "ordinal_encoder.pkl"))
 
 # %%
 # One-Hot Encoding pour les colonnes catégorielles nominales
@@ -219,6 +225,7 @@ num_cols_reg = X_reg.select_dtypes(
     include=["number", "bool", "int64", "float64"]
 ).columns
 X_reg[num_cols_reg] = scaler_reg.fit_transform(X_reg[num_cols_reg])
+joblib.dump(scaler_reg, os.path.join(ROOT_DIR, "models", "scaler_reg.pkl"))
 
 print(f"Regression: X_reg scaled ({X_reg.shape}), y_reg intact ({y_reg.shape})")
 
@@ -236,9 +243,18 @@ num_cols_class = X_class.select_dtypes(
     include=["number", "bool", "int64", "float64"]
 ).columns
 X_class[num_cols_class] = scaler_class.fit_transform(X_class[num_cols_class])
+joblib.dump(scaler_class, os.path.join(ROOT_DIR, "models", "scaler_class.pkl"))
 
 print(
     f"Classification: X_class scaled ({X_class.shape}), y_class intact ({y_class.shape})"
+)
+
+# Sauvegarde des colonnes finales pour l'API (pour aligner les One-Hot Encoding)
+joblib.dump(
+    X_class.columns.tolist(), os.path.join(ROOT_DIR, "models", "X_class_columns.pkl")
+)
+joblib.dump(
+    X_reg.columns.tolist(), os.path.join(ROOT_DIR, "models", "X_reg_columns.pkl")
 )
 
 
@@ -267,39 +283,14 @@ df_reg_corr = pd.concat([X_reg, y_reg], axis=1)
 corr_matrix_reg = df_reg_corr.corr().loc[X_reg.columns, targets_reg]
 
 # Combined Plot
-fig = plt.figure(figsize=(16, 10))
-gs = fig.add_gridspec(1, 2, width_ratios=[1, 4], wspace=0.3)
-
-# Plot 1: Classification Target Correlation
-ax0 = fig.add_subplot(gs[0])
-sns.heatmap(
-    corr_with_target.to_frame(),
-    annot=True,
-    cmap="coolwarm",
-    fmt=".2f",
-    ax=ax0,
-    cbar=False,
-)
-ax0.set_title("Classification: 'Completed'", fontsize=10)
-
-# Plot 2: Regression Target Correlations
-ax1 = fig.add_subplot(gs[1])
-sns.heatmap(corr_matrix_reg, annot=True, cmap="YlGnBu", fmt=".2f", ax=ax1)
-ax1.set_title("Régression: 4 Targets", fontsize=10)
-
-plt.tight_layout()
-save_path = os.path.join(ROOT_DIR, "reports", "figures", "correlation_combined.png")
-plt.savefig(save_path, dpi=300)
-plt.show()
+# Plotting code removed for CI/CD compatibility
+# fig = plt.figure(figsize=(16, 10))
+# ...
 
 # %% [markdown]
 # ---
 #
 # ### Export des données
-
-# %%
-# SAUVEGARDE DES DATASETS DANS data/processed
-import os
 
 # Créer le dossier processed s'il n'existe pas
 processed_path = os.path.join(ROOT_DIR, "data", "processed")

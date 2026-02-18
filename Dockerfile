@@ -25,5 +25,9 @@ COPY . .
 # Créer les dossiers nécessaires s'ils n'existent pas
 RUN mkdir -p data/processed models reports/figures
 
-# Commande par défaut : Lancer le pipeline complet
-CMD ["python", "main.py"]
+# Exposer le port par défaut de Streamlit
+EXPOSE 8501
+
+# Commande par défaut : Lancer le dashboard Streamlit
+# On utilise python -m streamlit pour éviter les problèmes de PATH
+CMD ["python", "-m", "streamlit", "run", "streamlit_app.py", "--server.port=8501", "--server.address=0.0.0.0"]

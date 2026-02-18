@@ -14,15 +14,25 @@ import numpy as np
 import matplotlib.pyplot as plt
 import shap
 import torch
-import torch.nn as nn
+import os
+import warnings
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import accuracy_score, mean_squared_error, r2_score
-import warnings
-import os
+import sys
+from models_architectures import (
+    CourseCompletionClassifier,
+    StudentPerformanceRegressor,
+)
 
 # Base directory for relative paths (project root)
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+# Ajouter le root au path pour les imports de src
+
+
+if ROOT_DIR not in sys.path:
+    sys.path.append(ROOT_DIR)
 
 warnings.filterwarnings("ignore")
 
@@ -106,70 +116,16 @@ print(
 #
 # ## Définition des Architectures PyTorch
 #
-# Les architectures sont **identiques** à celles du notebook `03_torch_models`.
-
-
-# %%
-class CourseCompletionClassifier(nn.Module):
-    def __init__(self, input_dim):
-        super(CourseCompletionClassifier, self).__init__()
-        self.net = nn.Sequential(
-            nn.Linear(input_dim, 256),
-            nn.BatchNorm1d(256),
-            nn.ReLU(),
-            nn.Dropout(0.3),
-            nn.Linear(256, 128),
-            nn.BatchNorm1d(128),
-            nn.ReLU(),
-            nn.Dropout(0.3),
-            nn.Linear(128, 64),
-            nn.BatchNorm1d(64),
-            nn.ReLU(),
-            nn.Dropout(0.2),
-            nn.Linear(64, 32),
-            nn.BatchNorm1d(32),
-            nn.ReLU(),
-            nn.Dropout(0.1),
-            nn.Linear(32, 1),
-            nn.Sigmoid(),
-        )
-
-    def forward(self, x):
-        return self.net(x)
-
-
-class StudentPerformanceRegressor(nn.Module):
-    def __init__(self, input_dim, output_dim):
-        super(StudentPerformanceRegressor, self).__init__()
-        self.net = nn.Sequential(
-            nn.Linear(input_dim, 256),
-            nn.BatchNorm1d(256),
-            nn.ReLU(),
-            nn.Dropout(0.2),
-            nn.Linear(256, 128),
-            nn.BatchNorm1d(128),
-            nn.ReLU(),
-            nn.Dropout(0.2),
-            nn.Linear(128, 64),
-            nn.BatchNorm1d(64),
-            nn.ReLU(),
-            nn.Dropout(0.1),
-            nn.Linear(64, 32),
-            nn.ReLU(),
-            nn.Linear(32, output_dim),
-        )
-
-    def forward(self, x):
-        return self.net(x)
-
-
-# %% [markdown]
-# ### Chargement du modèle de Classification
-#
 # On charge les poids sauvegardés dans `models/torch_clf_model.pth`.
 
 # %%
-model_clf = CourseCompletionClassifier(X_train_c.shape[1]).to(device)
+# Dimensions
+input_size_class = X_train_c.shape[1]
+input_size_reg = X_train_r.shape[1]
+output_size_reg = y_train_r_s.shape[1]
+
+# Charger le modèle de Classification
+model_clf = CourseCompletionClassifier(input_size_class).to(device)
 model_clf.load_state_dict(
     torch.load(
         os.path.join(ROOT_DIR, "models", "torch_clf_model.pth"),
@@ -193,9 +149,8 @@ with torch.no_grad():
 # On charge les poids sauvegardés dans `models/torch_reg_model.pth`.
 
 # %%
-model_reg = StudentPerformanceRegressor(X_train_r.shape[1], y_train_r_s.shape[1]).to(
-    device
-)
+# Charger le modèle de Régression
+model_reg = StudentPerformanceRegressor(input_size_reg, output_size_reg).to(device)
 model_reg.load_state_dict(
     torch.load(
         os.path.join(ROOT_DIR, "models", "torch_reg_model.pth"),

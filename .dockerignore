@@ -11,10 +11,11 @@ __pycache__/
 env/
 venv/
 
-# Data & Models (ignore raw data/large binaries to keep image lightweight)
+# Data & Models (keep processed data, raw data is ignored)
 data/raw
-models/*.pth
-models/*.pkl
+# models/ are needed for inference in the container
+# models/*.pth
+# models/*.pkl
 
 # Notebooks
 .ipynb_checkpoints

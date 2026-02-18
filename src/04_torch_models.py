@@ -21,6 +21,18 @@ import os
 # Base directory for relative paths (project root)
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+# Ajouter le root au path pour les imports de src
+import sys
+
+if ROOT_DIR not in sys.path:
+    sys.path.append(ROOT_DIR)
+
+# importation des architectures partagées
+from models_architectures import (
+    CourseCompletionClassifier,
+    StudentPerformanceRegressor,
+)
+
 # Vérifier si GPU disponible
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(f"Device utilisé: {device}")
@@ -84,34 +96,6 @@ print(
 
 
 # %%
-# Modèle de Classification
-class CourseCompletionClassifier(nn.Module):
-    def __init__(self, input_dim):
-        super(CourseCompletionClassifier, self).__init__()
-        self.net = nn.Sequential(
-            nn.Linear(input_dim, 256),
-            nn.BatchNorm1d(256),
-            nn.ReLU(),
-            nn.Dropout(0.3),
-            nn.Linear(256, 128),
-            nn.BatchNorm1d(128),
-            nn.ReLU(),
-            nn.Dropout(0.3),
-            nn.Linear(128, 64),
-            nn.BatchNorm1d(64),
-            nn.ReLU(),
-            nn.Dropout(0.2),
-            nn.Linear(64, 32),
-            nn.BatchNorm1d(32),
-            nn.ReLU(),
-            nn.Dropout(0.1),
-            nn.Linear(32, 1),
-            nn.Sigmoid(),
-        )
-
-    def forward(self, x):
-        return self.net(x)
-
 
 model_class = CourseCompletionClassifier(X_train_class_tensor.shape[1]).to(device)
 
@@ -254,30 +238,6 @@ print(
 
 
 # %%
-# Modèle de Régression Amélioré
-class StudentPerformanceRegressor(nn.Module):
-    def __init__(self, input_dim, output_dim):
-        super(StudentPerformanceRegressor, self).__init__()
-        self.net = nn.Sequential(
-            nn.Linear(input_dim, 256),
-            nn.BatchNorm1d(256),
-            nn.ReLU(),
-            nn.Dropout(0.2),
-            nn.Linear(256, 128),
-            nn.BatchNorm1d(128),
-            nn.ReLU(),
-            nn.Dropout(0.2),
-            nn.Linear(128, 64),
-            nn.BatchNorm1d(64),
-            nn.ReLU(),
-            nn.Dropout(0.1),
-            nn.Linear(64, 32),
-            nn.ReLU(),
-            nn.Linear(32, output_dim),
-        )
-
-    def forward(self, x):
-        return self.net(x)
 
 
 model_reg = StudentPerformanceRegressor(X_train_reg.shape[1], y_train_reg.shape[1]).to(
