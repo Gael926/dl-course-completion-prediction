@@ -1,0 +1,24 @@
+# Git
+.git
+.gitignore
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.env
+.venv
+env/
+venv/
+
+# Data & Models (ignore raw data/large binaries to keep image lightweight)
+data/raw
+models/*.pth
+models/*.pkl
+
+# Notebooks
+.ipynb_checkpoints
+
+# IDEs
+.vscode/
+.idea/

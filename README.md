@@ -81,42 +81,66 @@ Nous avons utilisé des réseaux de neurones (PyTorch/TensorFlow) pour prédire 
     pip install -r requirements.txt
     ```
 
-3.  **Lancer le pipeline** :
+3.  **Lancer le pipeline complet** :
     ```bash
-    # 1. Préparer les données
-    python src/00_data_prep.py
-
-    # 2. Entraîner et évaluer les modèles
-    python src/01_baselines.py
-    python src/02_sklearn_models.py
-    python src/04_torch_models.py
+    python main.py
     ```
+    *Ce script exécute automatiquement la préparation des données, les modèles de base, Scikit-Learn, PyTorch et l'analyse finale.*
 
 4.  **Explorer les Analyses** :
-    Ouvrez `notebooks/05_model_analysis.ipynb` pour voir les **SHAP values** et l'importance des features.
+    Consultez le dossier `notebooks/` pour accéder aux 6 étapes détaillées du projet (EDA, SHAP values, importance des features, etc.).
+
+5.  **Exécuter les Tests** :
+    ```bash
+    pytest
+    ```
+
+### Intégration Continue (CI/CD)
+Le projet utilise **GitHub Actions** pour garantir la qualité du code. À chaque modification (push), un pipeline automatique :
+1. Installe l'environnement.
+2. Exécute le pipeline complet (`main.py`).
+3. Lance les tests unitaires (`pytest`).
+
+### Option 2 : Docker (Recommandé pour la portabilité)
+Si vous avez Docker installé, vous pouvez lancer le projet complet sans installer Python localement :
+```bash
+# Construire l'image
+docker build -t ml-course-prediction .
+
+# Lancer le pipeline complet
+docker run ml-course-prediction
+```
 
 ## Structure du Projet
 ```
-├── data/               # Données brutes et traitées
-├── models/             # Modèles sauvegardés (.pth, .pkl)
-├── notebooks/          # Notebooks Jupyter (Exploration & Analyse)
+├── data/                      # Données brutes et traitées
+├── models/                    # Modèles sauvegardés (.pth)
+│   ├── torch_clf_model.pth
+│   ├── torch_reg_model.pth
+├── notebooks/                 # Notebooks Jupyter (Exploration & Analyse)
 │   ├── 00_data_prep.ipynb
 │   ├── 01_baselines.ipynb
 │   ├── 02_sklearn_models.ipynb
 │   ├── 03_tf_models.ipynb
 │   ├── 04_torch_models.ipynb
 │   └── 05_model_analysis.ipynb
-├── reports/            # Rapports et visualisations
-│   └── figures/        # Graphiques générés pour le README
-├── src/                # Scripts Python modulaires (Production)
+├── reports/figures/           # Graphiques générés pour le README
+├── src/                       # Scripts Python modulaires (Production)
 │   ├── 00_data_prep.py        # Nettoyage & Feature Engineering
 │   ├── 01_baselines.py        # Modèles de base
 │   ├── 02_sklearn_models.py   # Modèles Scikit-Learn
 │   ├── 03_tf_models.py        # Implémentation TensorFlow
 │   ├── 04_torch_models.py     # Implémentation PyTorch
-│   ├── 05_model_analysis.py   # Analyse des résultats & SHAP
-├── requirements.txt    # Dépendances du projet
-└── README.md           # Documentation
+│   └── 05_model_analysis.py   # Analyse des résultats & SHAP
+├── tests/                     # Tests unitaires (Pytest)
+│   ├── test_data.py           # Validation des données traitées
+│   └── test_models.py         # Validation de l'intégrité des modèles
+├── .github/workflows/         # Configuration GitHub Actions (CI/CD)
+├── main.py                    # Script d'orchestration (Point d'entrée)
+├── requirements.txt           # Dépendances du projet
+├── Dockerfile                 # Configuration Docker
+├── .dockerignore              # Fichiers à ignorer par Docker
+└── README.md                  # Documentation
 ```
 
 ## Impact Métier & Stratégie
