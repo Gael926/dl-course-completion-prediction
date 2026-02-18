@@ -16,6 +16,10 @@ from sklearn.metrics import accuracy_score, mean_squared_error, r2_score
 import matplotlib.pyplot as plt
 from sklearn.metrics import confusion_matrix, classification_report
 import seaborn as sns
+import os
+
+# Base directory for relative paths (project root)
+ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # Vérifier si GPU disponible
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -26,12 +30,16 @@ print(f"Device utilisé: {device}")
 
 # %%
 # Classification
-X_class = pd.read_csv("../data/processed/X_classification.csv")
-y_class = pd.read_csv("../data/processed/y_classification.csv")
+X_class = pd.read_csv(
+    os.path.join(ROOT_DIR, "data", "processed", "X_classification.csv")
+)
+y_class = pd.read_csv(
+    os.path.join(ROOT_DIR, "data", "processed", "y_classification.csv")
+)
 
 # Régression
-X_reg = pd.read_csv("../data/processed/X_regression.csv")
-y_reg = pd.read_csv("../data/processed/y_regression.csv")
+X_reg = pd.read_csv(os.path.join(ROOT_DIR, "data", "processed", "X_regression.csv"))
+y_reg = pd.read_csv(os.path.join(ROOT_DIR, "data", "processed", "y_regression.csv"))
 
 print("CLASSIFICATION:")
 print(f"X_class: {X_class.shape}")
@@ -153,7 +161,8 @@ for epoch in range(500):
         )
 
 # Sauvegarde du meilleur modèle
-torch.save(model_class.state_dict(), "../models/torch_clf_model.pth")
+save_path = os.path.join(ROOT_DIR, "models", "torch_clf_model.pth")
+torch.save(model_class.state_dict(), save_path)
 
 # %%
 # EVALUATION - CLASSIFICATION
@@ -178,7 +187,8 @@ plt.title("Matrice de Confusion")
 plt.xlabel("Prédiction")
 plt.ylabel("Réel")
 plt.tight_layout()
-plt.savefig("../reports/figures/torch_confusion_matrix.png", dpi=300)
+save_path = os.path.join(ROOT_DIR, "reports", "figures", "torch_confusion_matrix.png")
+plt.savefig(save_path, dpi=300)
 plt.show()
 
 # Detailed Report
@@ -194,7 +204,8 @@ plt.xlabel("Epochs")
 plt.ylabel("BCELoss")
 plt.legend()
 plt.grid(True)
-plt.savefig("../reports/figures/torch_class_loss.png", dpi=300)
+save_path = os.path.join(ROOT_DIR, "reports", "figures", "torch_class_loss.png")
+plt.savefig(save_path, dpi=300)
 plt.show()
 
 # %% [markdown]
@@ -316,7 +327,8 @@ for epoch in range(500):
         )
 
 # Sauvegarde du meilleur modèle
-torch.save(model_reg.state_dict(), "../models/torch_reg_model.pth")
+save_path = os.path.join(ROOT_DIR, "models", "torch_reg_model.pth")
+torch.save(model_reg.state_dict(), save_path)
 
 # %%
 # Évaluation Régression
@@ -350,7 +362,8 @@ plt.xlabel("Epochs")
 plt.ylabel("HuberLoss Loss")
 plt.legend()
 plt.grid(True)
-plt.savefig("../reports/figures/torch_reg_loss.png", dpi=300)
+save_path = os.path.join(ROOT_DIR, "reports", "figures", "torch_reg_loss.png")
+plt.savefig(save_path, dpi=300)
 plt.show()
 
 # %%
@@ -373,5 +386,6 @@ for i, (ax, name) in enumerate(zip(axes, target_names)):
     ax.grid(True)
 
 plt.tight_layout()
-plt.savefig("../reports/figures/torch_reg_predictions.png", dpi=300)
+save_path = os.path.join(ROOT_DIR, "reports", "figures", "torch_reg_predictions.png")
+plt.savefig(save_path, dpi=300)
 plt.show()

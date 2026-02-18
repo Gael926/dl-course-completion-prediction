@@ -16,15 +16,23 @@ from sklearn.multioutput import MultiOutputRegressor
 from sklearn.neural_network import MLPClassifier
 from sklearn.metrics import accuracy_score, confusion_matrix
 from sklearn.metrics import mean_squared_error, r2_score
+import os
+
+# Base directory for relative paths (project root)
+ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # %%
 # Classification
 try:
-    X_class = pd.read_csv("../data/processed/X_classification.csv")
-    y_class = pd.read_csv("../data/processed/y_classification.csv")
+    X_class = pd.read_csv(
+        os.path.join(ROOT_DIR, "data", "processed", "X_classification.csv")
+    )
+    y_class = pd.read_csv(
+        os.path.join(ROOT_DIR, "data", "processed", "y_classification.csv")
+    )
     # Régression
-    X_reg = pd.read_csv("../data/processed/X_regression.csv")
-    y_reg = pd.read_csv("../data/processed/y_regression.csv")
+    X_reg = pd.read_csv(os.path.join(ROOT_DIR, "data", "processed", "X_regression.csv"))
+    y_reg = pd.read_csv(os.path.join(ROOT_DIR, "data", "processed", "y_regression.csv"))
 
     print("Données chargées avec succès.")
     print(f"  Classification: {X_class.shape}")
@@ -124,7 +132,10 @@ for bar in bars:
 
 plt.tight_layout()
 plt.tight_layout()
-plt.savefig("../reports/figures/sklearn_accuracy_comparison.png", dpi=300)
+save_path = os.path.join(
+    ROOT_DIR, "reports", "figures", "sklearn_accuracy_comparison.png"
+)
+plt.savefig(save_path, dpi=300)
 plt.show()
 
 # %%
@@ -255,7 +266,10 @@ plt.grid(True, alpha=0.3)
 
 plt.tight_layout()
 plt.tight_layout()
-plt.savefig("../reports/figures/sklearn_reg_project_grade.png", dpi=300)
+save_path = os.path.join(
+    ROOT_DIR, "reports", "figures", "sklearn_reg_project_grade.png"
+)
+plt.savefig(save_path, dpi=300)
 plt.show()
 
 # Comparaison des RMSE globaux
@@ -278,5 +292,6 @@ for bar in bars:
         va="bottom",
     )
 plt.tight_layout()
-plt.savefig("../reports/figures/sklearn_rmse_comparison.png", dpi=300)
+save_path = os.path.join(ROOT_DIR, "reports", "figures", "sklearn_rmse_comparison.png")
+plt.savefig(save_path, dpi=300)
 plt.show()

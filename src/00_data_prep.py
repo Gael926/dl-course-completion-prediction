@@ -14,11 +14,16 @@ from sklearn.preprocessing import LabelEncoder, OrdinalEncoder, StandardScaler
 sns.set_style("whitegrid")
 pd.set_option("display.max_columns", None)
 
+import os
+
+# Base directory for relative paths (project root)
+ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
 # %% [markdown]
 # ## 1. Data Loading and Overview
 
 # %%
-file_path = "../data/raw/Course_Completion_Prediction.csv"
+file_path = os.path.join(ROOT_DIR, "data", "raw", "Course_Completion_Prediction.csv")
 df = pd.read_csv(file_path)
 # on garde que les categorie = a programming
 df = df[df["Category"] == "Programming"]
@@ -283,7 +288,8 @@ sns.heatmap(corr_matrix_reg, annot=True, cmap="YlGnBu", fmt=".2f", ax=ax1)
 ax1.set_title("Régression: 4 Targets", fontsize=10)
 
 plt.tight_layout()
-plt.savefig("../reports/figures/correlation_combined.png", dpi=300)
+save_path = os.path.join(ROOT_DIR, "reports", "figures", "correlation_combined.png")
+plt.savefig(save_path, dpi=300)
 plt.show()
 
 # %% [markdown]
@@ -296,7 +302,7 @@ plt.show()
 import os
 
 # Créer le dossier processed s'il n'existe pas
-processed_path = "../data/processed"
+processed_path = os.path.join(ROOT_DIR, "data", "processed")
 os.makedirs(processed_path, exist_ok=True)
 
 # Sauvegarde des datasets de régression

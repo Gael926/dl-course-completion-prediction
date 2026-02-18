@@ -20,17 +20,25 @@ from tensorflow.keras.layers import (
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error, r2_score
 import matplotlib.pyplot as plt
+import os
+
+# Base directory for relative paths (project root)
+ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # %% [markdown]
 # ## 1. Chargement des données
 
 # %%
 # Chargement des fichiers exportés
-X_class = pd.read_csv("../data/processed/X_classification.csv")
-y_class = pd.read_csv("../data/processed/y_classification.csv")
+X_class = pd.read_csv(
+    os.path.join(ROOT_DIR, "data", "processed", "X_classification.csv")
+)
+y_class = pd.read_csv(
+    os.path.join(ROOT_DIR, "data", "processed", "y_classification.csv")
+)
 
-X_reg = pd.read_csv("../data/processed/X_regression.csv")
-y_reg = pd.read_csv("../data/processed/y_regression.csv")
+X_reg = pd.read_csv(os.path.join(ROOT_DIR, "data", "processed", "X_regression.csv"))
+y_reg = pd.read_csv(os.path.join(ROOT_DIR, "data", "processed", "y_regression.csv"))
 
 print("Datasets chargés successfully.")
 print(f"Classification : X={X_class.shape}, y={y_class.shape}")

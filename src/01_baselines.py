@@ -7,13 +7,21 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import LogisticRegression
 from sklearn.dummy import DummyClassifier
 from sklearn.metrics import accuracy_score
+import os
+
+# Base directory for relative paths (project root)
+ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # %%
 # 1. Chargement des données (Classification)
 
 try:
-    X_class = pd.read_csv("../data/processed/X_classification.csv")
-    y_class = pd.read_csv("../data/processed/y_classification.csv")
+    X_class = pd.read_csv(
+        os.path.join(ROOT_DIR, "data", "processed", "X_classification.csv")
+    )
+    y_class = pd.read_csv(
+        os.path.join(ROOT_DIR, "data", "processed", "y_classification.csv")
+    )
 
     print("Données chargées avec succès.")
     print(f"  Classification: {X_class.shape}")

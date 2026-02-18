@@ -19,6 +19,10 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import accuracy_score, mean_squared_error, r2_score
 import warnings
+import os
+
+# Base directory for relative paths (project root)
+ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 warnings.filterwarnings("ignore")
 
@@ -32,10 +36,14 @@ print(f"Device: {device}")
 
 # %%
 # Chargement des données pré-traitées
-X_class = pd.read_csv("../data/processed/X_classification.csv")
-y_class = pd.read_csv("../data/processed/y_classification.csv")
-X_reg = pd.read_csv("../data/processed/X_regression.csv")
-y_reg = pd.read_csv("../data/processed/y_regression.csv")
+X_class = pd.read_csv(
+    os.path.join(ROOT_DIR, "data", "processed", "X_classification.csv")
+)
+y_class = pd.read_csv(
+    os.path.join(ROOT_DIR, "data", "processed", "y_classification.csv")
+)
+X_reg = pd.read_csv(os.path.join(ROOT_DIR, "data", "processed", "X_regression.csv"))
+y_reg = pd.read_csv(os.path.join(ROOT_DIR, "data", "processed", "y_regression.csv"))
 
 feature_names_class = X_class.columns.tolist()
 feature_names_reg = X_reg.columns.tolist()
@@ -163,7 +171,11 @@ class StudentPerformanceRegressor(nn.Module):
 # %%
 model_clf = CourseCompletionClassifier(X_train_c.shape[1]).to(device)
 model_clf.load_state_dict(
-    torch.load("../models/torch_clf_model.pth", map_location=device, weights_only=True)
+    torch.load(
+        os.path.join(ROOT_DIR, "models", "torch_clf_model.pth"),
+        map_location=device,
+        weights_only=True,
+    )
 )
 model_clf.eval()
 print("Modèle de Classification chargé depuis torch_clf_model.pth")
@@ -185,7 +197,11 @@ model_reg = StudentPerformanceRegressor(X_train_r.shape[1], y_train_r_s.shape[1]
     device
 )
 model_reg.load_state_dict(
-    torch.load("../models/torch_reg_model.pth", map_location=device, weights_only=True)
+    torch.load(
+        os.path.join(ROOT_DIR, "models", "torch_reg_model.pth"),
+        map_location=device,
+        weights_only=True,
+    )
 )
 model_reg.eval()
 print("Modèle de Régression chargé depuis torch_reg_model.pth")
@@ -230,11 +246,11 @@ plt.figure()
 shap.summary_plot(
     shap_values_clf, X_test_c[:200], feature_names=feature_names_class, show=False
 )
-plt.title("Impact des features sur la Complétion du cours")
 plt.tight_layout()
-plt.savefig(
-    "../reports/figures/shap_classification_summary.png", dpi=150, bbox_inches="tight"
+save_path = os.path.join(
+    ROOT_DIR, "reports", "figures", "shap_classification_summary.png"
 )
+plt.savefig(save_path, dpi=150, bbox_inches="tight")
 plt.show()
 
 # %%
@@ -249,9 +265,8 @@ shap.summary_plot(
 )
 plt.title("Importance moyenne des features (Classification)")
 plt.tight_layout()
-plt.savefig(
-    "../reports/figures/shap_classification_bar.png", dpi=150, bbox_inches="tight"
-)
+save_path = os.path.join(ROOT_DIR, "reports", "figures", "shap_classification_bar.png")
+plt.savefig(save_path, dpi=150, bbox_inches="tight")
 plt.show()
 
 # %% [markdown]
@@ -297,8 +312,11 @@ for i, name in enumerate(target_names):
     plt.title(f"SHAP - {name}")
     plt.tight_layout()
     safe_name = name.lower().replace(" ", "_")
+    save_path = os.path.join(
+        ROOT_DIR, "reports", "figures", f"shap_regression_{safe_name}.png"
+    )
     plt.savefig(
-        f"../reports/figures/shap_regression_{safe_name}.png",
+        save_path,
         dpi=150,
         bbox_inches="tight",
     )
@@ -336,9 +354,10 @@ plt.suptitle(
     "Importance des features par variable cible (Régression)", fontsize=14, y=1.01
 )
 plt.tight_layout()
-plt.savefig(
-    "../reports/figures/shap_regression_comparison.png", dpi=150, bbox_inches="tight"
+save_path = os.path.join(
+    ROOT_DIR, "reports", "figures", "shap_regression_comparison.png"
 )
+plt.savefig(save_path, dpi=150, bbox_inches="tight")
 plt.show()
 
 # %% [markdown]
