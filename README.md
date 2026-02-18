@@ -1,6 +1,7 @@
 
 # Course Completion Prediction & Student Performance Analysis
 
+[![Python application](https://github.com/Gael926/dl-course-completion-prediction/actions/workflows/python-app.yml/badge.svg)](https://github.com/Gael926/dl-course-completion-prediction/actions/workflows/python-app.yml)
 ![Python](https://img.shields.io/badge/Python-3.8%2B-blue)
 ![PyTorch](https://img.shields.io/badge/PyTorch-2.0%2B-red)
 ![TensorFlow](https://img.shields.io/badge/TensorFlow-2.0%2B-orange)
@@ -9,66 +10,53 @@
 ## Aperçu du Projet
 Ce projet utilise des techniques de **Machine Learning** et **Deep Learning** pour analyser et prédire la réussite des étudiants dans un cours en ligne.
 
-<p align="center">
+<p align="left">
   <a href="https://votre-app-streamlit.streamlit.app/">
     <img src="https://img.shields.io/badge/Live_Demo-Accéder_au_Dashboard-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white" alt="Live Demo" />
   </a>
 </p>
 
-<p align="center">
+<p align="left">
   <img src="reports/dashboard_demo.gif" width="90%" />
 </p>
-<p align="center"><i>Démo : Interface interactive de prédiction (Streamlit).</i></p>
+<p align="left"><i>Démo : Interface interactive de prédiction (Streamlit).</i></p>
 
-### Analyse des Données
-
-<p align="center">
-  <img src="reports/figures/final_data_analysis.png" width="90%" />
-</p>
-<p align="center"><i>Visualisation des corrélations : Impact direct sur la réussite (gauche) et relations multi-variables (droite).</i></p>
 
 ---
 
 ## Résultats Clés (Test Set)
 
 ### Classification (Target: `Completed`)
-Le problème est difficile (bruité), mais les modèles surpassent la baseline aléatoire.
+Le modèle Deep Learning est optimisé pour maximiser le F1-Score sur la classe minoritaire.
 
-<p align="center">
-  <img src="reports/figures/final_accuracy_comparison.png" width="70%" />
+<p align="left">
+  <img src="https://raw.githubusercontent.com/Gael926/dl-course-completion-prediction/main/reports/figures/torch_class_loss.png" width="80%" />
 </p>
-
-| Modèle | Accuracy | F1-Score | Observations |
-| :--- | :---: | :---: | :--- |
-| **Baseline (Dummy)** | 49.87% | - | Performance aléatoire. |
-| **Logistic Regression** | 56.40% | - | Simple mais efficace. |
-| **Random Forest** | 59.40% | - | Capture les interactions complexes. |
-| **Gradient Boosting** | **60.47%** | - | Très performant, capture des non-linéarités. |
-| **PyTorch NN** | 60.02% | 0.61 | Bonnes performances, mais nécessite plus de tuning. |
-
-<p align="center">
-  <img src="reports/figures/final_classification.png" width="90%" />
-</p>
-<p align="center"><i>Performance du modèle Deep Learning : Matrice de confusion et impact des variables (SHAP).</i></p>
+<p align="left"><i>Courbe d'apprentissage : Convergence stable sans overfitting majeur.</i></p>
 
 ### Régression (Multi-output)
-Nous avons utilisé des réseaux de neurones (PyTorch/TensorFlow) pour prédire les 4 variables simultanément.
+Un réseau de neurones unique prédit simultanément les 4 indicateurs de performance.
 
-<p align="center">
-  <img src="reports/figures/sklearn_rmse_comparison.png" width="70%" />
+<p align="left">
+  <img src="https://raw.githubusercontent.com/Gael926/dl-course-completion-prediction/main/reports/figures/torch_reg_loss.png" width="80%" />
 </p>
 
-| Target | RMSE (PyTorch) | R² | Interprétation |
-| :--- | :---: | :---: | :--- |
-| **Project Grade** | **3.56** | **0.94** | **Excellente prédiction**. Les features (quiz, activité) expliquent très bien la note finale. |
-| **Quiz Score** | 12.31 | 0.04 | Difficile à prédire précisément uniquement via le comportement. |
-| **Satisfaction** | 0.70 | ~0.00 | Aucune corrélation trouvée (probablement subjectif/aléatoire). |
-| **Time Spent** | 3.82 | ~0.00 | Aucune corrélation trouvée avec les features disponibles. |
-
-<p align="center">
-  <img src="reports/figures/final_regression.png" width="90%" />
+#### Analyse des Prédictions : Réel vs Prédit
+<p align="left">
+  <img src="https://raw.githubusercontent.com/Gael926/dl-course-completion-prediction/main/reports/figures/torch_reg_predictions.png" width="90%" />
 </p>
-<p align="center"><i>Diagnostic de la régression : Prédictions sur les notes de projet et importance des features.</i></p>
+<p align="left"><i>Le modèle excelle sur le "Project Grade" (en haut à droite) mais peine sur la Satisfaction (en bas à gauche), qui semble aléatoire.</i></p>
+
+#### Facteurs d'Influence (SHAP par Target)
+<p align="left">
+  <img src="https://raw.githubusercontent.com/Gael926/dl-course-completion-prediction/main/reports/figures/shap_regression_project_grade.png" width="45%" />
+  <img src="https://raw.githubusercontent.com/Gael926/dl-course-completion-prediction/main/reports/figures/shap_regression_quiz_score_avg.png" width="45%" />
+</p>
+<p align="left">
+  <img src="https://raw.githubusercontent.com/Gael926/dl-course-completion-prediction/main/reports/figures/shap_regression_time_spent_hours.png" width="45%" />
+  <img src="https://raw.githubusercontent.com/Gael926/dl-course-completion-prediction/main/reports/figures/shap_regression_satisfaction_rating.png" width="45%" />
+</p>
+<p align="left"><i>Analyse fine : Chaque indicateur a ses propres drivers. Notez l'impact spécifique de l'éducation sur les Quiz.</i></p>
 
 ---
 
@@ -77,100 +65,73 @@ Nous avons utilisé des réseaux de neurones (PyTorch/TensorFlow) pour prédire 
 *   **Comportement**: Le temps passé sur le cours est moins prédictif que la performance aux tests intermédiaires.
 *   **Robustesse**: Le Gradient Boosting reste le modèle de référence pour les données structurées de ce type.
 
+### Difficultés & Analyse des Données
+Certaines cibles (comme `Satisfaction` ou `Time_Spent`) sont extrêmement difficiles à prédire efficacement. Cela s'explique par le **manque de corrélation linéaire forte** dans les données, comme le montrent les matrices ci-dessous :
+
+<p align="left">
+  <img src="https://raw.githubusercontent.com/Gael926/dl-course-completion-prediction/main/reports/figures/correlation_target.png" width="45%" />
+  <img src="https://raw.githubusercontent.com/Gael926/dl-course-completion-prediction/main/reports/figures/correlation_matrix_reg.png" width="45%" />
+</p>
+<p align="left"><i>Visualisation des corrélations : Impact direct sur la réussite (gauche) et Matrice de corrélation Régression (droite).</i></p>
+
 ---
 
-## Installation & Usage
+## Installation & Quick Start
 
-1.  **Cloner le repo** :
-    ```bash
-    git clone https://github.com/votre-username/course-completion-prediction.git
-    cd course-completion-prediction
-    ```
+**Application en ligne** : [Accéder directement au Dashboard (Streamlit Cloud)](https://dl-course-completion-prediction.streamlit.app/)
 
-2.  **Installer les dépendances** :
-    ```bash
-    pip install -r requirements.txt
-    ```
-
-3.  **Lancer le pipeline complet** :
-    ```bash
-    python main.py
-    ```
-    *Ce script exécute automatiquement la préparation des données, les modèles de base, Scikit-Learn, PyTorch et l'analyse finale.*
-
-4.  **Explorer les Analyses** :
-    Consultez le dossier `notebooks/` pour accéder aux 6 étapes détaillées du projet (EDA, SHAP values, importance des features, etc.).
-
-5.  **Exécuter les Tests** :
-    ```bash
-    pytest
-    ```
-
-### 🚀 Interface & Déploiement
-
-Le projet est optimisé pour un déploiement rapide et gratuit :
-
-1.  **Dashboard Streamlit (Stand-alone)** :
-    L'interface gère désormais l'inférence localement, ce qui permet de l'héberger sans serveur externe.
-    ```bash
-    python -m streamlit run streamlit_app.py
-    ```
-
-2.  **API d'Inférence (FastAPI)** :
-    Toujours disponible pour une utilisation programmatique ou pour montrer vos compétences en backend.
-    ```bash
-    uvicorn app:app --reload
-    ```
-    Accès Swagger UI : `http://127.0.0.1:8000/docs`
-
-### Intégration Continue (CI/CD)
-Le projet utilise **GitHub Actions** pour garantir la qualité du code. À chaque modification (push), un pipeline automatique :
-1. Installe l'environnement.
-2. Exécute le pipeline complet (`main.py`).
-3. Lance les tests unitaires (`pytest`).
-
-### Option 2 : Docker (Recommandé pour la portabilité)
-Si vous avez Docker installé, vous pouvez lancer le projet complet sans installer Python localement :
+### Installation
 ```bash
-# Construire l'image
-docker build -t ml-course-prediction .
-
-# Lancer le pipeline complet
-docker run ml-course-prediction
+git clone https://github.com/Gael926/dl-course-completion-prediction.git
+cd dl-course-completion-prediction
+pip install -r requirements.txt
+python -m streamlit run streamlit_app.py # Lancer le Dashboard (Streamlit)
 ```
+
+### Commandes Avancées
+*   **Pipeline ML Complet** : `python main.py` (Data Prep -> Entraînement -> Analyse)
+*   **Tests Unitaires** : `pytest`
+*   **API FastAPI** : `uvicorn app:app --reload`
+*   **Docker** :
+    ```bash
+    docker build -t ml-course-prediction .
+    docker run -p 8501:8501 ml-course-prediction
+    ```
 
 ## Structure du Projet
 ```
-├── data/                      # Données brutes et traitées
-├── models/                    # Modèles sauvegardés (.pth)
-│   ├── torch_clf_model.pth
-│   ├── torch_reg_model.pth
-├── notebooks/                 # Notebooks Jupyter (Exploration & Analyse)
+├── data/                          # Données brutes et traitées
+├── models/                        # Modèles (.pth) et Artefacts (.pkl)
+│   ├── torch_clf_model.pth        # Poids du modèle de classification
+│   ├── torch_reg_model.pth        # Poids du modèle de régression
+│   └── *.pkl                      # Encoders et Scalers pour le préprocessing
+├── notebooks/                     # Notebooks Jupyter (Exploration & Analyse)
 │   ├── 00_data_prep.ipynb
 │   ├── 01_baselines.ipynb
 │   ├── 02_sklearn_models.ipynb
 │   ├── 03_tf_models.ipynb
 │   ├── 04_torch_models.ipynb
 │   └── 05_model_analysis.ipynb
-├── reports/figures/           # Graphiques générés pour le README
-├── src/                       # Scripts Python modulaires (Production)
-│   ├── 00_data_prep.py        # Nettoyage & Feature Engineering
-│   ├── 01_baselines.py        # Modèles de base
-│   ├── 02_sklearn_models.py   # Modèles Scikit-Learn
-│   ├── 03_tf_models.py        # Implémentation TensorFlow
-│   ├── 04_torch_models.py     # Implémentation PyTorch
-│   └── 05_model_analysis.py   # Analyse des résultats & SHAP
-├── tests/                     # Tests unitaires (Pytest)
-│   ├── test_data.py           # Validation des données traitées
-│   └── test_models.py         # Validation de l'intégrité des modèles
-├── .github/workflows/         # Configuration GitHub Actions (CI/CD)
-├── main.py                    # Script d'orchestration (Point d'entrée)
-├── app.py                     # Serveur d'inférence FastAPI
-├── streamlit_app.py           # Dashboard de visualisation
-├── requirements.txt           # Dépendances du projet
-├── Dockerfile                 # Configuration Docker
-├── .dockerignore              # Fichiers à ignorer par Docker
-└── README.md                  # Documentation
+├── reports/figures/               # Graphiques générés pour le README
+├── src/                           # Scripts Python modulaires (Production)
+│   ├── 00_data_prep.py            # Nettoyage & Feature Engineering
+│   ├── 01_baselines.py            # Modèles de base
+│   ├── 02_sklearn_models.py       # Modèles Scikit-Learn
+│   ├── 03_tf_models.py            # Implémentation TensorFlow
+│   ├── 04_torch_models.py         # Implémentation PyTorch
+│   ├── 05_model_analysis.py       # Analyse des résultats & SHAP
+│   └── models_architectures.py    # Définition des classes PyTorch (NN)
+├── tests/                         # Tests unitaires (Pytest)
+│   ├── test_data.py               # Validation des données traitées
+│   └── test_models.py             # Validation de l'intégrité des modèles
+├── .github/workflows/             # Configuration GitHub Actions (CI/CD)
+├── main.py                        # Script d'orchestration (Point d'entrée)
+├── app.py                         # Serveur d'inférence FastAPI
+├── streamlit_app.py               # Dashboard de visualisation
+├── requirements.txt               # Dépendances du projet
+├── Dockerfile                     # Configuration Docker
+├── .dockerignore                  # Fichiers à ignorer par Docker
+└── README.md                      # Documentation
 ```
 
 ## Impact Métier & Stratégie

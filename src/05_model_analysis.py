@@ -192,29 +192,45 @@ shap_values_clf = explainer_clf.shap_values(X_test_c_tensor[:200])
 
 # GradientExplainer peut retourner une liste (un array par sortie)
 if isinstance(shap_values_clf, list):
+    print(
+        "SHAP values is a list (likely multi-output or classification probabilities)."
+    )
+    # Pour une classification binaire avec 1 sortie (sigmoid), on a souvent une liste de 1 array
     shap_values_clf = shap_values_clf[0]
+else:
+    print("SHAP values is a single array.")
+
+print(f"SHAP values shape: {shap_values_clf.shape}")
+# Correction : Si shape est (200, 42, 1), on doit le réduire à (200, 42)
+if len(shap_values_clf.shape) == 3 and shap_values_clf.shape[2] == 1:
+    shap_values_clf = shap_values_clf.squeeze(2)
+    print(f"SHAP values reshaped to: {shap_values_clf.shape}")
+
+print(f"X_test_c shape: {X_test_c[:200].shape}")
+print(f"Feature names count: {len(feature_names_class)}")
+print(f"First feature names: {feature_names_class[:5]}")
 
 # %%
 # Summary Plot (Beeswarm) - Classification
 # Chaque point = un exemple. Couleur = valeur de la feature. Position = impact SHAP.
 plt.figure()
-shap.summary_plot(
-    shap_values_clf, X_test_c[:200], feature_names=feature_names_class, show=False
-)
+# Convertir en DataFrame pour avoir les noms de features automatiquement
+X_test_c_df = pd.DataFrame(X_test_c[:200], columns=feature_names_class)
+shap.summary_plot(shap_values_clf, X_test_c_df, show=False)
 plt.tight_layout()
 save_path = os.path.join(
     ROOT_DIR, "reports", "figures", "shap_classification_summary.png"
 )
 plt.savefig(save_path, dpi=150, bbox_inches="tight")
-plt.show()
+# plt.show()
 
 # %%
 # Bar Plot - Importance moyenne absolue des features
 plt.figure()
+# Re-utilisation du DataFrame créé ci-dessus
 shap.summary_plot(
     shap_values_clf,
-    X_test_c[:200],
-    feature_names=feature_names_class,
+    X_test_c_df,
     plot_type="bar",
     show=False,
 )
@@ -222,7 +238,7 @@ plt.title("Importance moyenne des features (Classification)")
 plt.tight_layout()
 save_path = os.path.join(ROOT_DIR, "reports", "figures", "shap_classification_bar.png")
 plt.savefig(save_path, dpi=150, bbox_inches="tight")
-plt.show()
+# plt.show()
 
 # %% [markdown]
 # ---
@@ -275,7 +291,7 @@ for i, name in enumerate(target_names):
         dpi=150,
         bbox_inches="tight",
     )
-    plt.show()
+    # plt.show()
 
 # %%
 # Comparaison : importance moyenne des features par cible
@@ -313,7 +329,7 @@ save_path = os.path.join(
     ROOT_DIR, "reports", "figures", "shap_regression_comparison.png"
 )
 plt.savefig(save_path, dpi=150, bbox_inches="tight")
-plt.show()
+# plt.show()
 
 # %% [markdown]
 # ---
