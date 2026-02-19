@@ -11,7 +11,7 @@
 Ce projet utilise des techniques de **Machine Learning** et **Deep Learning** pour analyser et prédire la réussite des étudiants dans un cours en ligne.
 
 <p align="left">
-  <a href="https://votre-app-streamlit.streamlit.app/">
+  <a href="https://dl-course-completion-prediction.streamlit.app/">
     <img src="https://img.shields.io/badge/Live_Demo-Accéder_au_Dashboard-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white" alt="Live Demo" />
   </a>
 </p>
